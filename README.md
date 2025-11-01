@@ -1,6 +1,6 @@
 # Dockerizing a Maven webapp
 
-Minimal, copy-ready guide to build and run a Maven-based Java web application in Docker.
+This project implements a complete CI/CD pipeline for deploying a Java web application using GitHub, Jenkins, Maven, Docker, Tomcat, and AWS EC2. The pipeline supports Dev and Prod environments through Jenkins parameters, enabling automated builds, containerization, and environment-specific deployments. Dev uses Docker Compose for testing, while Prod pulls the latest Docker image, removes old containers, and runs a fresh instance. Cleanup automation is included to remove old containers and images. Designed & Developed by Sak_Shetty under MIT License.
 
 ## Prerequisites
 - Docker installed
@@ -14,14 +14,12 @@ Minimal, copy-ready guide to build and run a Maven-based Java web application in
 - src/main/webapp (for WAR)
 - target/ (build output)
 
-## Project WOrk Proceduer
-- Push the codes to Github - **git push origin masin**
-- Pull the project in to server - **git pull origin main**
-- build the project - **mvn clean package**
-- build the Docker image in the project - **docker build -t canara_image .**
-- Run the container - **docker run -it -d --name canara_container -p 8080:8080 canara_image**
+## GitHub Badges Block
+![Jenkins](https://img.shields.io/badge/CI-Jenkins-blue)
+![Docker](https://img.shields.io/badge/Container-Docker-blue)
+![Maven](https://img.shields.io/badge/Build-Maven-success)
+![Tomcat](https://img.shields.io/badge/Server-Tomcat-orange)
+![AWS](https://img.shields.io/badge/Cloud-AWS-ff9900)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-### Optional that you can run using docker-compose also
-- to build and run the container - **docker-compose up -d --build**
-- to remove the container - **docker-compose down**
 ---
