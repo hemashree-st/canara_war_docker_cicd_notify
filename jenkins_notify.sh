@@ -29,7 +29,7 @@ if ! command -v msmtp >/dev/null 2>&1; then
   sudo apt-get install -y msmtp mailutils >> "$LOG_FILE" 2>&1
 fi
 
-# ✅ Configure msmtp (temp file inside workspace)
+# ✅ Configure msmtp
 cat > ./msmtprc <<EOF
 defaults
 auth           on
@@ -48,22 +48,54 @@ EOF
 
 chmod 600 ./msmtprc
 
-SUBJECT="Jenkins Build Notification - $JOB_NAME (#$BUILD_ID)"
-BODY="
-Hello,
+SUBJECT="Jenkins Build - $JOB_NAME (#$BUILD_ID) - $STATUS"
 
-Jenkins job finished.
+# ✅ HTML Email body
+EMAIL_CONTENT=$(cat <<EOF
+Subject: $SUBJECT
+From: $GMAIL_USER
+To: $TO_EMAIL
+Content-Type: text/html
 
-✅ Job: $JOB_NAME
-🔢 Build: $BUILD_ID
-📌 Status: $STATUS
-👨‍💻 Designed & Developed by: sak_shetty
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { font-family: Arial, sans-serif; background:#f7f7f7; padding:25px; }
+.card {
+  background:#ffffff; padding:20px; border-radius:8px;
+  border:1px solid #ddd; max-width:500px;
+}
+h2 { color:#2e7d32; margin-top:0; }
+p { font-size:14px; }
+.status-success { color:#28a745; font-weight:bold; }
+.status-failure { color:#d32f2f; font-weight:bold; }
+.footer { font-size:12px; margin-top:20px; color:#555; }
+</style>
+</head>
 
-Regards,
-Jenkins Notification Service
-"
+<body>
+<div class="card">
+<h2>Jenkins Build Notification</h2>
 
-echo "$BODY" | msmtp --debug --file=./msmtprc -a gmail "$TO_EMAIL"
+<p><b>Project:</b> $JOB_NAME</p>
+<p><b>Build ID:</b> $BUILD_ID</p>
+<p><b>Status:</b>
+  <span class="status-$([ "$STATUS" = "SUCCESS" ] && echo "success" || echo "failure")">
+  $STATUS
+  </span>
+</p>
+<p><b>Timestamp:</b> $(date)</p>
 
-echo "✅ Email sent at $(date)" | tee -a "$LOG_FILE"
+<hr>
+<p class="footer">🚀 Designed & Developed by <b>sak_shetty</b></p>
+</div>
+</body>
+</html>
+EOF
+)
+
+echo "$EMAIL_CONTENT" | msmtp --file=./msmtprc -a gmail "$TO_EMAIL"
+
+echo "✅ HTML Email sent at $(date)" | tee -a "$LOG_FILE"
 exit 0
